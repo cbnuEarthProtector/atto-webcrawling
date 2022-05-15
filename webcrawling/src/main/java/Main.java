@@ -1,6 +1,7 @@
 public class Main {
 
     public static void main(String[] args) {
-        WebCrawling webCrawling = new WebCrawling();
+        JayeonsangjumCrawling webCrawling = new JayeonsangjumCrawling();
+        webCrawling.ProductWebCrawling("kitchen");
     }
 }
