@@ -24,6 +24,7 @@ public class JayeonsangjumCrawling {
     private String laundryPageUrl = "http://onlyeco.co.kr/category/%EC%84%B8%ED%83%81%EC%9A%A9%ED%92%88/75/"; // 리빙-세탁용품 카테고리 페이지
     private String bathPageUrl = "http://onlyeco.co.kr/category/%EC%9A%95%EC%8B%A4%EC%9A%A9%ED%92%88/95/"; // 리빙-욕실용품 카테고리 페이지
     private ArrayList<String> productNames = new ArrayList<>();
+    private ArrayList<Integer> productPrices = new ArrayList<>();
     private String brandName = "자연상점";
 
     public JayeonsangjumCrawling() {
@@ -37,7 +38,7 @@ public class JayeonsangjumCrawling {
         this.actions = new Actions(this.driver);
     }
 
-    public void ProductWebCrawling(String category) {
+    public void productWebCrawling(String category) {
         String url = "";
         switch (category) {
             case "kitchen" -> url = kitchenPageUrl;
@@ -69,7 +70,10 @@ public class JayeonsangjumCrawling {
 
             for (WebElement element : descriptionElements) {
                 productNames.add(element.findElement((By.className("name"))).getText());
-                //System.out.println(element.findElement((By.className("name"))).getText());
+                String price = element.findElement((By.className("xans-record-"))).getText();
+                price = price.replaceAll(",", "");
+                price = price.replaceAll("원", "");
+                productPrices.add(Integer.parseInt(price));
             }
             descriptionElements.clear();
 
