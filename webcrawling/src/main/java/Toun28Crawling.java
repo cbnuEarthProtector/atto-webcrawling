@@ -21,7 +21,7 @@ public class Toun28Crawling {
     private ArrayList<String> bathPageUrl = new ArrayList<>(); // 욕실 용품 관련 카테고리 페이지 저장하는 배열
     private ArrayList<String> cosmeticPageUrl = new ArrayList<>(); // 화장품 카테고리 페이지 저장
 
-    private String brandName = "닥터노아";
+    private String brandName = "톤28";
     private ArrayList<String> productNames = new ArrayList<>();
     private ArrayList<Integer> productPrices = new ArrayList<>();
     private ArrayList<String> productUrls = new ArrayList<>();
