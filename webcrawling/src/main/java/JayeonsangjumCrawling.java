@@ -21,10 +21,10 @@ public class JayeonsangjumCrawling {
     private static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     private static String WEB_DRIVER_PATH = "chromedriver.exe";
 
-    private String mainPageUrl = "http://onlyeco.co.kr/"; // 자연상점 페이지
-    private String kitchenPageUrl = "http://onlyeco.co.kr/category/%EB%A6%AC%EB%B9%99/51/"; // 리빙-주방용품 카테고리 페이지
-    private String laundryPageUrl = "http://onlyeco.co.kr/category/%EC%84%B8%ED%83%81%EC%9A%A9%ED%92%88/75/"; // 리빙-세탁용품 카테고리 페이지
-    private String bathPageUrl = "http://onlyeco.co.kr/category/%EC%9A%95%EC%8B%A4%EC%9A%A9%ED%92%88/95/"; // 리빙-욕실용품 카테고리 페이지
+    private String mainPageUrl;
+    private String kitchenPageUrl;
+    private String laundryPageUrl;
+    private String bathPageUrl;
 
     private String brandName = "자연상점";
     private ArrayList<String> productNames = new ArrayList<>();
@@ -41,6 +41,11 @@ public class JayeonsangjumCrawling {
         this.driver = new ChromeDriver(options);
         this.javascriptExecutor = (JavascriptExecutor)this.driver;
         this.actions = new Actions(this.driver);
+
+        mainPageUrl = "http://onlyeco.co.kr/"; // 자연상점 페이지
+        kitchenPageUrl = "http://onlyeco.co.kr/category/%EB%A6%AC%EB%B9%99/51/"; // 리빙-주방용품 카테고리 페이지
+        laundryPageUrl = "http://onlyeco.co.kr/category/%EC%84%B8%ED%83%81%EC%9A%A9%ED%92%88/75/"; // 리빙-세탁용품 카테고리 페이지
+        bathPageUrl = "http://onlyeco.co.kr/category/%EC%9A%95%EC%8B%A4%EC%9A%A9%ED%92%88/95/"; // 리빙-욕실용품 카테고리 페이지
     }
 
     public void productWebCrawling(String category) {
@@ -56,8 +61,8 @@ public class JayeonsangjumCrawling {
 
         List<WebElement> descriptionElements = null; // 판매 품목을 저장하는 list
         List<WebElement> prdImgElements = null; // 상품 이미지를 저장하는 list
-        boolean productsLessThan18 = false; // 현재 페이지의 상품 개수가 18개 이하인지 체크
-        int pageCnt = 2; // 현재 상품 판매 페이지 카운트
+        boolean productsLessThanMaxNum = false; // 현재 페이지의 상품 개수가 18개 이하인지 체크
+        int pageCnt = 2; // 다음 상품 판매 페이지 카운트
         
         while(true) {
             for(int i = 0; i < 6; i++) {
@@ -69,10 +74,9 @@ public class JayeonsangjumCrawling {
                     descriptionElements = this.driver.findElements(By.className("description"));
                     prdImgElements = this.driver.findElements(By.className("prdImg"));
                 } catch (Exception e) {
-                    productsLessThan18 = true;
+                    productsLessThanMaxNum = true;
                 }
             }
-            if(productsLessThan18) break; // 상품 개수가 18개 미만이면 해당 페이지가 마지막 페이지임
 
             for (WebElement element : descriptionElements) {
                 productNames.add(element.findElement((By.className("name"))).
@@ -89,6 +93,8 @@ public class JayeonsangjumCrawling {
                 productImages.add(element.findElement(By.tagName("img")).getAttribute("src"));
             }
             prdImgElements.clear();
+
+            if(productsLessThanMaxNum) break; // 상품 개수가 18개 미만이면 해당 페이지가 마지막 페이지임
 
             try {
                 this.driver.get(crawlingPageUrl + "?page=" + pageCnt); // 다음 페이지로 이동
