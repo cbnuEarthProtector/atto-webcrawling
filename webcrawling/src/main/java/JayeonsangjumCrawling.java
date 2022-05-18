@@ -84,6 +84,7 @@ public class JayeonsangjumCrawling {
 
                 String price = element.findElement((By.className("xans-record-"))).getText();
                 price = price.replaceAll(",", "");
+                price = price.replaceAll("₩", "");
                 price = price.replaceAll("원", "");
                 productPrices.add(Integer.parseInt(price)); // 상품 가격 저장
             }
