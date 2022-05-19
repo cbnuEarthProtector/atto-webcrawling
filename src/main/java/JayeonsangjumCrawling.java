@@ -34,10 +34,10 @@ public class JayeonsangjumCrawling {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized"); // 창 최대
-        //options.addArguments("headless"); // 창 숨김
+        options.addArguments("headless"); // 창 숨김
         options.addArguments("--disable-popup-blocking"); // 팝업창 막기
         this.driver = new ChromeDriver(options);
-        this.javascriptExecutor = (JavascriptExecutor)this.driver;
+        this.javascriptExecutor = (JavascriptExecutor) this.driver;
         this.actions = new Actions(this.driver);
 
         mainPageUrl = "http://onlyeco.co.kr/"; // 자연상점 페이지
@@ -54,7 +54,7 @@ public class JayeonsangjumCrawling {
             case "bath" -> crawlingPageUrl = bathPageUrl;
             default -> crawlingPageUrl = null;
         }
-        if(crawlingPageUrl == null) return;
+        if (crawlingPageUrl == null) return;
 
         this.driver.get(crawlingPageUrl);
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
@@ -62,9 +62,9 @@ public class JayeonsangjumCrawling {
         List<WebElement> descriptionElements = null; // 판매 품목을 저장하는 list
         List<WebElement> prdImgElements = null; // 상품 이미지를 저장하는 list
         int pageCnt = 2; // 다음 상품 판매 페이지 카운트
-        
-        while(true) {
-            for(int i = 0; i < 6; i++) {
+
+        while (true) {
+            for (int i = 0; i < 6; i++) {
                 driver.findElement(By.tagName("body")).sendKeys(Keys.PAGE_DOWN);
                 webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
 
@@ -76,46 +76,42 @@ public class JayeonsangjumCrawling {
                     System.out.println(e);
                 }
             }
-            if(descriptionElements.size() == 0) break; // 마지막 페이지까지 상품 검토 완료
+            if (descriptionElements.size() == 0) break; // 마지막 페이지까지 상품 검토 완료
 
-            Product product = new Product();
-            product.setCategory(category);
             for (int i = 0; i < descriptionElements.size(); i++) {
+                Product product = new Product();
+                product.setCategory(category);
+
                 WebElement descriptionElement = descriptionElements.get(i);
                 WebElement prdImgElement = prdImgElements.get(i);
-
-                product.setName(descriptionElement.findElement(By.className("name")).getText());
-                System.out.println("name: " + descriptionElement.findElement(By.className("name")).getText());
-
-                product.setSiteURL(descriptionElement.findElement((By.className("name"))).
-                        findElement(By.tagName("a")).getAttribute("href")); // 상품 판매 crawlingPageUrl 저장
 
                 String price = descriptionElement.findElement((By.className("xans-record-"))).getText();
                 price = price.replaceAll(",", "");
                 price = price.replaceAll("₩", "");
                 price = price.replaceAll("원", "");
                 product.setPrice(Integer.parseInt(price)); // 상품 가격 저장
-
+                product.setName(descriptionElement.findElement(By.className("name")).getText());
+                product.setSiteURL(descriptionElement.findElement((By.className("name"))).
+                        findElement(By.tagName("a")).getAttribute("href")); // 상품 판매 crawlingPageUrl 저장
                 product.setPhotoURL(prdImgElement.findElement(By.tagName("img")).getAttribute("src"));
 
                 products.add(product);
-
-                System.out.println(product.toString());
             }
-            descriptionElements.clear();
-            prdImgElements.clear();
 
             try {
                 this.driver.get(crawlingPageUrl + "?page=" + pageCnt); // 다음 페이지로 이동
                 pageCnt++;
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 break;
             }
         }
     }
 
-    public String getBrandName() { return brandName; }
+    public String getBrandName() {
+        return brandName;
+    }
 
-    public ArrayList<Product> getProducts() { return products; }
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
 }

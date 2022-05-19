@@ -34,7 +34,7 @@ public class DrnoaCrawling {
         options.addArguments("headless"); // 창 숨김
         options.addArguments("--disable-popup-blocking"); // 팝업창 막기
         this.driver = new ChromeDriver(options);
-        this.javascriptExecutor = (JavascriptExecutor)this.driver;
+        this.javascriptExecutor = (JavascriptExecutor) this.driver;
         this.actions = new Actions(this.driver);
 
         mainPageUrl = "https://www.doctornoah.net/SHOP"; // 닥터노아 페이지
@@ -48,25 +48,22 @@ public class DrnoaCrawling {
         crawlingPageUrls.add(bathPageUrl.get(0));
         crawlingPageUrls.add(bathPageUrl.get(1));
 
-        for(String crawlingPageUrl : crawlingPageUrls)
-        {
+        for (String crawlingPageUrl : crawlingPageUrls) {
             this.driver.get(crawlingPageUrl);
             WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
 
             List<WebElement> shopItemElements = null; // 상품 정보를 저장하는 list
 
-            for(int i = 0; i < 6; i++) {
+            for (int i = 0; i < 6; i++) {
                 driver.findElement(By.tagName("body")).sendKeys(Keys.PAGE_DOWN);
                 webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
 
                 shopItemElements = this.driver.findElements(By.className("shop-item"));
             }
 
-            Product product = new Product();
-            product.setCategory("bath");
             for (WebElement element : shopItemElements) {
-                product.setName(element.findElement((By.className("item-detail")))
-                        .findElement(By.tagName("a")).getText());
+                Product product = new Product();
+                product.setCategory("bath");
 
                 String price = element.findElement(By.className("item-pay-detail"))
                         .findElement(By.className("pay")).getText();
@@ -74,18 +71,22 @@ public class DrnoaCrawling {
                 price = price.replaceAll("₩", "");
                 price = price.replaceAll("원", "");
                 product.setPrice(Integer.parseInt(price)); // 상품 가격 저장
-
+                product.setName(element.findElement((By.className("item-detail")))
+                        .findElement(By.tagName("a")).getText());
                 product.setPhotoURL(element.findElement(By.tagName("img")).getAttribute("src"));
-
                 product.setSiteURL(element.findElement(By.className("item-detail"))
                         .findElement(By.tagName("a")).getAttribute("href"));
+
+                products.add(product);
             }
-            products.add(product);
-            shopItemElements.clear();
         }
     }
 
-    public String getBrandName() { return brandName; }
+    public String getBrandName() {
+        return brandName;
+    }
 
-    public ArrayList<Product> getProducts() { return products; }
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
 }
