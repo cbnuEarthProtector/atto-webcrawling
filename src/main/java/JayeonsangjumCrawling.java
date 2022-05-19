@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.time.Duration;
 import java.util.*;
 
+import database.Product;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -14,23 +15,20 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class JayeonsangjumCrawling {
-    private WebDriver driver;
-    private JavascriptExecutor javascriptExecutor;
-    private Actions actions;
+    private final WebDriver driver;
+    private final JavascriptExecutor javascriptExecutor;
+    private final Actions actions;
     private WebElement element;
-    private static String WEB_DRIVER_ID = "webdriver.chrome.driver";
-    private static String WEB_DRIVER_PATH = "chromedriver.exe";
+    private static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
+    private static final String WEB_DRIVER_PATH = "chromedriver.exe";
 
-    private String mainPageUrl;
-    private String kitchenPageUrl;
-    private String laundryPageUrl;
-    private String bathPageUrl;
+    private final String mainPageUrl;
+    private final String kitchenPageUrl;
+    private final String laundryPageUrl;
+    private final String bathPageUrl;
 
-    private String brandName = "자연상점";
-    private ArrayList<String> productNames = new ArrayList<>();
-    private ArrayList<Integer> productPrices = new ArrayList<>();
-    private ArrayList<String> productUrls = new ArrayList<>();
-    private ArrayList<String> productImages = new ArrayList<>();
+    private final String brandName = "자연상점";
+    private final ArrayList<Product> products = new ArrayList<>();
 
     public JayeonsangjumCrawling() {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
@@ -39,7 +37,7 @@ public class JayeonsangjumCrawling {
         options.addArguments("headless"); // 창 숨김
         options.addArguments("--disable-popup-blocking"); // 팝업창 막기
         this.driver = new ChromeDriver(options);
-        this.javascriptExecutor = (JavascriptExecutor)this.driver;
+        this.javascriptExecutor = (JavascriptExecutor) this.driver;
         this.actions = new Actions(this.driver);
 
         mainPageUrl = "http://onlyeco.co.kr/"; // 자연상점 페이지
@@ -54,18 +52,19 @@ public class JayeonsangjumCrawling {
             case "kitchen" -> crawlingPageUrl = kitchenPageUrl;
             case "laundry" -> crawlingPageUrl = laundryPageUrl;
             case "bath" -> crawlingPageUrl = bathPageUrl;
+            default -> crawlingPageUrl = null;
         }
+        if (crawlingPageUrl == null) return;
 
         this.driver.get(crawlingPageUrl);
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
 
         List<WebElement> descriptionElements = null; // 판매 품목을 저장하는 list
         List<WebElement> prdImgElements = null; // 상품 이미지를 저장하는 list
-        boolean productsLessThanMaxNum = false; // 현재 페이지의 상품 개수가 18개 이하인지 체크
         int pageCnt = 2; // 다음 상품 판매 페이지 카운트
-        
-        while(true) {
-            for(int i = 0; i < 6; i++) {
+
+        while (true) {
+            for (int i = 0; i < 6; i++) {
                 driver.findElement(By.tagName("body")).sendKeys(Keys.PAGE_DOWN);
                 webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
 
@@ -74,46 +73,45 @@ public class JayeonsangjumCrawling {
                     descriptionElements = this.driver.findElements(By.className("description"));
                     prdImgElements = this.driver.findElements(By.className("prdImg"));
                 } catch (Exception e) {
-                    productsLessThanMaxNum = true;
+                    System.out.println(e);
                 }
             }
+            if (descriptionElements.size() == 0) break; // 마지막 페이지까지 상품 검토 완료
 
-            for (WebElement element : descriptionElements) {
-                productNames.add(element.findElement((By.className("name"))).
-                        findElement(By.tagName("a")).getAttribute("href")); // 상품 판매 crawlingPageUrl 저장
+            for (int i = 0; i < descriptionElements.size(); i++) {
+                Product product = new Product();
+                product.setCategory(category);
 
-                String price = element.findElement((By.className("xans-record-"))).getText();
+                WebElement descriptionElement = descriptionElements.get(i);
+                WebElement prdImgElement = prdImgElements.get(i);
+
+                String price = descriptionElement.findElement((By.className("xans-record-"))).getText();
                 price = price.replaceAll(",", "");
                 price = price.replaceAll("₩", "");
                 price = price.replaceAll("원", "");
-                productPrices.add(Integer.parseInt(price)); // 상품 가격 저장
-            }
-            descriptionElements.clear();
+                product.setPrice(Integer.parseInt(price)); // 상품 가격 저장
+                product.setName(descriptionElement.findElement(By.className("name")).getText());
+                product.setSiteURL(descriptionElement.findElement((By.className("name"))).
+                        findElement(By.tagName("a")).getAttribute("href")); // 상품 판매 crawlingPageUrl 저장
+                product.setPhotoURL(prdImgElement.findElement(By.tagName("img")).getAttribute("src"));
 
-            for(WebElement element : prdImgElements) {
-                productImages.add(element.findElement(By.tagName("img")).getAttribute("src"));
+                products.add(product);
             }
-            prdImgElements.clear();
-
-            if(productsLessThanMaxNum) break; // 상품 개수가 18개 미만이면 해당 페이지가 마지막 페이지임
 
             try {
                 this.driver.get(crawlingPageUrl + "?page=" + pageCnt); // 다음 페이지로 이동
                 pageCnt++;
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 break;
             }
         }
     }
 
-    public String getBrandName() { return brandName; }
+    public String getBrandName() {
+        return brandName;
+    }
 
-    public ArrayList<String> getProductNames() { return productNames; }
-
-    public ArrayList<Integer> getProductPrices() { return productPrices; }
-
-    public ArrayList<String> getProductUrls() { return productUrls; }
-
-    public ArrayList<String> getProductImages() { return productImages; }
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
 }
