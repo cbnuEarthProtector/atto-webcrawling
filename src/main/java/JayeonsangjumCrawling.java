@@ -109,8 +109,6 @@ public class JayeonsangjumCrawling {
         }
     }
 
-
-
     public String getBrandName() { return brandName; }
 
     public ArrayList<Product> getProducts() { return products; }
