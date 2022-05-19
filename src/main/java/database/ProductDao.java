@@ -13,7 +13,7 @@ public class ProductDao extends Dao {
                 + "category TEXT, \n"
                 + "brand_id INTEGER ,\n"
                 + "price INTEGER, \n"
-                + "site_url TEXT, \n"
+                + "site_url TEXT unique, \n"
                 + "photo_url TEXT, \n"
                 + "is_bookmarked INTEGER , \n"
                 + "memo TEXT, \n"
@@ -35,7 +35,7 @@ public class ProductDao extends Dao {
     }
 
     public void insert(Integer brandId, Product product) {
-        String SQL = "INSERT INTO product VALUES (?,?,?,?,?,?,?,?,?)";
+        String SQL = "INSERT or ignore INTO product VALUES (?,?,?,?,?,?,?,?,?)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
