@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class ProductDao extends Dao {
     public void createTable() {
-        String SQL = "CREATE TABLE IF NOT EXISTS product (\n"
+        String SQL = "CREATE TABLE IF NOT EXISTS Product (\n"
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
                 + "name TEXT,\n"
                 + "category TEXT, \n"
@@ -15,7 +15,9 @@ public class ProductDao extends Dao {
                 + "price INTEGER, \n"
                 + "site_url TEXT, \n"
                 + "photo_url TEXT, \n"
-                + "foreign key(brand_id) references brand(id)\n"
+                + "is_bookmarked INTEGER , \n"
+                + "memo TEXT, \n"
+                + "foreign key(brand_id) references Brand(id)\n"
                 + ");";
 
         Connection conn = null;
@@ -33,7 +35,7 @@ public class ProductDao extends Dao {
     }
 
     public void insert(Integer brandId, Product product) {
-        String SQL = "INSERT INTO product VALUES (?,?,?,?,?,?,?)";
+        String SQL = "INSERT INTO product VALUES (?,?,?,?,?,?,?,?,?)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -50,6 +52,8 @@ public class ProductDao extends Dao {
             pstmt.setInt(5, product.getPrice());
             pstmt.setString(6, product.getSiteURL());
             pstmt.setString(7, product.getPhotoURL());
+            pstmt.setInt(8, 0);
+            pstmt.setString(9, null);
 
             pstmt.executeUpdate();
         } catch (Exception e) {
