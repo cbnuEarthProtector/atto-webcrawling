@@ -1,3 +1,4 @@
+import database.Product;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -9,24 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrnoaCrawling {
-    private WebDriver driver;
-    private JavascriptExecutor javascriptExecutor;
-    private Actions actions;
+    private final WebDriver driver;
+    private final JavascriptExecutor javascriptExecutor;
+    private final Actions actions;
     private WebElement element;
-    private static String WEB_DRIVER_ID = "webdriver.chrome.driver";
-    private static String WEB_DRIVER_PATH = "chromedriver.exe";
+    private static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
+    private static final String WEB_DRIVER_PATH = "chromedriver.exe";
 
-    private String mainPageUrl;
-    private ArrayList<String> kitchenPageUrl = new ArrayList<>(); // 주방 관련 카테고리 페이지 저장
-    private ArrayList<String> bathPageUrl = new ArrayList<>(); // 욕실 용품 관련 카테고리 페이지 저장하는 배열
-    private ArrayList<String> cosmeticPageUrl = new ArrayList<>(); // 화장품 카테고리 페이지 저장
-    private ArrayList<String> fashionPageUrl = new ArrayList<>(); // 패션 관련 카테고리 페이지 저장
+    private final String mainPageUrl;
+    private final ArrayList<String> kitchenPageUrl = new ArrayList<>(); // 주방 관련 카테고리 페이지 저장
+    private final ArrayList<String> bathPageUrl = new ArrayList<>(); // 욕실 용품 관련 카테고리 페이지 저장하는 배열
+    private final ArrayList<String> cosmeticPageUrl = new ArrayList<>(); // 화장품 카테고리 페이지 저장
+    private final ArrayList<String> fashionPageUrl = new ArrayList<>(); // 패션 관련 카테고리 페이지 저장
 
-    private String brandName = "닥터노아";
-    private ArrayList<String> productNames = new ArrayList<>();
-    private ArrayList<Integer> productPrices = new ArrayList<>();
-    private ArrayList<String> productUrls = new ArrayList<>();
-    private ArrayList<String> productImages = new ArrayList<>();
+    private final String brandName = "닥터노아";
+    private final ArrayList<Product> products = new ArrayList<>();
 
     public DrnoaCrawling() {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
@@ -63,8 +61,10 @@ public class DrnoaCrawling {
                 shopItemElements = this.driver.findElements(By.className("shop-item"));
             }
 
+            Product product = new Product();
+            product.setCategory("bath");
             for (WebElement element : shopItemElements) {
-                productNames.add(element.findElement((By.className("item-detail")))
+                product.setName(element.findElement((By.className("item-detail")))
                         .findElement(By.tagName("a")).getText());
 
                 String price = element.findElement(By.className("item-pay-detail"))
@@ -72,24 +72,19 @@ public class DrnoaCrawling {
                 price = price.replaceAll(",", "");
                 price = price.replaceAll("₩", "");
                 price = price.replaceAll("원", "");
-                productPrices.add(Integer.parseInt(price)); // 상품 가격 저장
+                product.setPrice(Integer.parseInt(price)); // 상품 가격 저장
 
-                productImages.add(element.findElement(By.tagName("img")).getAttribute("src"));
+                product.setPhotoURL(element.findElement(By.tagName("img")).getAttribute("src"));
 
-                productUrls.add(element.findElement(By.className("item-detail"))
+                product.setSiteURL(element.findElement(By.className("item-detail"))
                         .findElement(By.tagName("a")).getAttribute("href"));
             }
+            products.add(product);
             shopItemElements.clear();
         }
     }
 
     public String getBrandName() { return brandName; }
 
-    public ArrayList<String> getProductNames() { return productNames; }
-
-    public ArrayList<Integer> getProductPrices() { return productPrices; }
-
-    public ArrayList<String> getProductUrls() { return productUrls; }
-
-    public ArrayList<String> getProductImages() { return productImages; }
+    public ArrayList<Product> getProducts() { return products; }
 }

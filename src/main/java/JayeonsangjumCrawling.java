@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.time.Duration;
 import java.util.*;
 
+import database.Product;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -14,23 +15,20 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class JayeonsangjumCrawling {
-    private WebDriver driver;
-    private JavascriptExecutor javascriptExecutor;
-    private Actions actions;
+    private final WebDriver driver;
+    private final JavascriptExecutor javascriptExecutor;
+    private final Actions actions;
     private WebElement element;
-    private static String WEB_DRIVER_ID = "webdriver.chrome.driver";
-    private static String WEB_DRIVER_PATH = "chromedriver.exe";
+    private static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
+    private static final String WEB_DRIVER_PATH = "chromedriver.exe";
 
-    private String mainPageUrl;
-    private String kitchenPageUrl;
-    private String laundryPageUrl;
-    private String bathPageUrl;
+    private final String mainPageUrl;
+    private final String kitchenPageUrl;
+    private final String laundryPageUrl;
+    private final String bathPageUrl;
 
-    private String brandName = "자연상점";
-    private ArrayList<String> productNames = new ArrayList<>();
-    private ArrayList<Integer> productPrices = new ArrayList<>();
-    private ArrayList<String> productUrls = new ArrayList<>();
-    private ArrayList<String> productImages = new ArrayList<>();
+    private final String brandName = "자연상점";
+    private final ArrayList<Product> products = new ArrayList<>();
 
     public JayeonsangjumCrawling() {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
@@ -54,7 +52,9 @@ public class JayeonsangjumCrawling {
             case "kitchen" -> crawlingPageUrl = kitchenPageUrl;
             case "laundry" -> crawlingPageUrl = laundryPageUrl;
             case "bath" -> crawlingPageUrl = bathPageUrl;
+            default -> crawlingPageUrl = null;
         }
+        if(crawlingPageUrl == null) return;
 
         this.driver.get(crawlingPageUrl);
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
@@ -78,20 +78,22 @@ public class JayeonsangjumCrawling {
                 }
             }
 
+            Product product = new Product();
+            product.setCategory(category);
             for (WebElement element : descriptionElements) {
-                productNames.add(element.findElement((By.className("name"))).
+                product.setName(element.findElement((By.className("name"))).
                         findElement(By.tagName("a")).getAttribute("href")); // 상품 판매 crawlingPageUrl 저장
 
                 String price = element.findElement((By.className("xans-record-"))).getText();
                 price = price.replaceAll(",", "");
                 price = price.replaceAll("₩", "");
                 price = price.replaceAll("원", "");
-                productPrices.add(Integer.parseInt(price)); // 상품 가격 저장
+                product.setPrice(Integer.parseInt(price)); // 상품 가격 저장
             }
             descriptionElements.clear();
 
             for(WebElement element : prdImgElements) {
-                productImages.add(element.findElement(By.tagName("img")).getAttribute("src"));
+                product.setPhotoURL(element.findElement(By.tagName("img")).getAttribute("src"));
             }
             prdImgElements.clear();
 
@@ -107,13 +109,9 @@ public class JayeonsangjumCrawling {
         }
     }
 
+
+
     public String getBrandName() { return brandName; }
 
-    public ArrayList<String> getProductNames() { return productNames; }
-
-    public ArrayList<Integer> getProductPrices() { return productPrices; }
-
-    public ArrayList<String> getProductUrls() { return productUrls; }
-
-    public ArrayList<String> getProductImages() { return productImages; }
+    public ArrayList<Product> getProducts() { return products; }
 }

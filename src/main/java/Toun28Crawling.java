@@ -96,5 +96,7 @@ public class Toun28Crawling {
         }
     }
 
+    public String getBrandName() { return brandName; }
+
     public ArrayList<Product> getProducts() { return products; }
 }
