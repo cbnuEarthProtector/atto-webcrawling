@@ -19,6 +19,10 @@ dependencies {
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.36.0.3'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 test {
@@ -26,4 +30,3 @@ test {
 }
 sourceCompatibility = JavaVersion.VERSION_14
 targetCompatibility = JavaVersion.VERSION_14
-}
