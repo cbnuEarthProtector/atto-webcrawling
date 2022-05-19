@@ -8,12 +8,12 @@ import java.sql.Statement;
 public class ProductDao extends Dao {
     public void createTable() {
         String SQL = "CREATE TABLE IF NOT EXISTS product (\n"
-                + "id integer PRIMARY KEY AUTOINCREMENT,\n"
-                + "name text NOT NULL,\n"
-                + "category text, \n"
-                + "price integer, \n"
-                + "site_url text, \n"
-                + "photo_url text \n"
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                + "name TEXT,\n"
+                + "category TEXT, \n"
+                + "price INTEGER, \n"
+                + "site_url TEXT, \n"
+                + "photo_url TEXT \n"
                 + ");";
 
         Connection conn = null;
@@ -56,14 +56,14 @@ public class ProductDao extends Dao {
         }
     }
 
-    public void reset() {
+    public void drop() {
         Connection conn = null;
         Statement stmt = null;
 
         try {
             conn = getConnection();
             stmt = conn.createStatement();
-            stmt.execute("DELETE FROM product");
+            stmt.execute("DROP TABLE IF EXISTS product");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

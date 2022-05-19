@@ -16,8 +16,8 @@ public class Main {
         String[] categories = {"kitchen", "cosmetic", "bath"};
 
         ProductDao productDao = new ProductDao();
+        productDao.drop();
         productDao.createTable();
-        productDao.reset();
 
         for (String category : categories) {
             toun28Crawling.productWebCrawling(category);
