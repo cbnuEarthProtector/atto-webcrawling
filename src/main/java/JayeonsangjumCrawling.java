@@ -34,7 +34,7 @@ public class JayeonsangjumCrawling {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized"); // 창 최대
-        options.addArguments("headless"); // 창 숨김
+        //options.addArguments("headless"); // 창 숨김
         options.addArguments("--disable-popup-blocking"); // 팝업창 막기
         this.driver = new ChromeDriver(options);
         this.javascriptExecutor = (JavascriptExecutor)this.driver;
@@ -61,7 +61,6 @@ public class JayeonsangjumCrawling {
 
         List<WebElement> descriptionElements = null; // 판매 품목을 저장하는 list
         List<WebElement> prdImgElements = null; // 상품 이미지를 저장하는 list
-        boolean productsLessThanMaxNum = false; // 현재 페이지의 상품 개수가 18개 이하인지 체크
         int pageCnt = 2; // 다음 상품 판매 페이지 카운트
         
         while(true) {
@@ -74,15 +73,19 @@ public class JayeonsangjumCrawling {
                     descriptionElements = this.driver.findElements(By.className("description"));
                     prdImgElements = this.driver.findElements(By.className("prdImg"));
                 } catch (Exception e) {
-                    productsLessThanMaxNum = true;
+                    System.out.println(e);
                 }
             }
+            if(descriptionElements.size() == 0) break; // 마지막 페이지까지 상품 검토 완료
 
             Product product = new Product();
             product.setCategory(category);
             for (int i = 0; i < descriptionElements.size(); i++) {
                 WebElement descriptionElement = descriptionElements.get(i);
                 WebElement prdImgElement = prdImgElements.get(i);
+
+                product.setName(descriptionElement.findElement(By.className("name")).getText());
+                System.out.println("name: " + descriptionElement.findElement(By.className("name")).getText());
 
                 product.setSiteURL(descriptionElement.findElement((By.className("name"))).
                         findElement(By.tagName("a")).getAttribute("href")); // 상품 판매 crawlingPageUrl 저장
@@ -101,8 +104,6 @@ public class JayeonsangjumCrawling {
             }
             descriptionElements.clear();
             prdImgElements.clear();
-
-            if(productsLessThanMaxNum) break; // 상품 개수가 18개 미만이면 해당 페이지가 마지막 페이지임
 
             try {
                 this.driver.get(crawlingPageUrl + "?page=" + pageCnt); // 다음 페이지로 이동
