@@ -80,21 +80,26 @@ public class JayeonsangjumCrawling {
 
             Product product = new Product();
             product.setCategory(category);
-            for (WebElement element : descriptionElements) {
-                product.setName(element.findElement((By.className("name"))).
+            for (int i = 0; i < descriptionElements.size(); i++) {
+                WebElement descriptionElement = descriptionElements.get(i);
+                WebElement prdImgElement = prdImgElements.get(i);
+
+                product.setSiteURL(descriptionElement.findElement((By.className("name"))).
                         findElement(By.tagName("a")).getAttribute("href")); // 상품 판매 crawlingPageUrl 저장
 
-                String price = element.findElement((By.className("xans-record-"))).getText();
+                String price = descriptionElement.findElement((By.className("xans-record-"))).getText();
                 price = price.replaceAll(",", "");
                 price = price.replaceAll("₩", "");
                 price = price.replaceAll("원", "");
                 product.setPrice(Integer.parseInt(price)); // 상품 가격 저장
+
+                product.setPhotoURL(prdImgElement.findElement(By.tagName("img")).getAttribute("src"));
+
+                products.add(product);
+
+                System.out.println(product.toString());
             }
             descriptionElements.clear();
-
-            for(WebElement element : prdImgElements) {
-                product.setPhotoURL(element.findElement(By.tagName("img")).getAttribute("src"));
-            }
             prdImgElements.clear();
 
             if(productsLessThanMaxNum) break; // 상품 개수가 18개 미만이면 해당 페이지가 마지막 페이지임

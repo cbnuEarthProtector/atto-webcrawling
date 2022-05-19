@@ -15,4 +15,17 @@ public class Product {
     private Integer price;
     private String siteURL;
     private String photoURL;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                ", brandId=" + brandId +
+                ", price=" + price +
+                ", siteURL='" + siteURL + '\'' +
+                ", photoURL='" + photoURL + '\'' +
+                '}';
+    }
 }
