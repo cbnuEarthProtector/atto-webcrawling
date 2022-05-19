@@ -7,12 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product {
+public class Brand {
     private Integer id;
     private String name;
-    private String category;
-    private Integer brandId;
-    private Integer price;
-    private String siteURL;
     private String photoURL;
 }
