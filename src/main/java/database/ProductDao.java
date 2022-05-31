@@ -35,6 +35,9 @@ public class ProductDao extends Dao {
     }
 
     public void insert(Integer brandId, Product product) {
+        // 동일한 상품이 존재하는 경우
+        if(findBySiteURL(product.getSiteURL())) return;
+
         String SQL = "INSERT or ignore INTO product VALUES (?,?,?,?,?,?,?,?,?)";
 
         Connection conn = null;
@@ -61,6 +64,31 @@ public class ProductDao extends Dao {
         } finally {
             close(conn, pstmt);
         }
+    }
+
+    public Boolean findBySiteURL(String siteURL) {
+        String SQL = "SELECT *\n" +
+                "FROM product\n" +
+                "WHERE site_url = ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(SQL);
+            pstmt.setString(1, siteURL);
+
+            rs = pstmt.executeQuery();
+
+            return rs.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(conn, pstmt, rs);
+        }
+        return null;
     }
 
     public void drop() {
