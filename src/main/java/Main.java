@@ -9,10 +9,8 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         ProductDao productDao = new ProductDao();
-        productDao.drop();
         productDao.createTable();
         BrandDao brandDao = new BrandDao();
-        brandDao.drop();
         brandDao.createTable();
 
         String[] categories = {"kitchen", "cosmetic", "laundry", "bath"};
