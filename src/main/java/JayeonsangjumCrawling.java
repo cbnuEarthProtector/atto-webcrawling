@@ -3,10 +3,6 @@
 // (powered by FernFlower decompiler)
 //
 
-import java.lang.reflect.Array;
-import java.time.Duration;
-import java.util.*;
-
 import database.Product;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,7 +10,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class JayeonsangjumCrawling {
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+public class JayeonsangjumCrawling implements Crawling {
     private final WebDriver driver;
     private final JavascriptExecutor javascriptExecutor;
     private final Actions actions;
@@ -28,7 +28,6 @@ public class JayeonsangjumCrawling {
     private final String bathPageUrl;
 
     private final String brandName = "자연상점";
-    private final ArrayList<Product> products = new ArrayList<>();
 
     public JayeonsangjumCrawling() {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
@@ -46,7 +45,9 @@ public class JayeonsangjumCrawling {
         bathPageUrl = "http://onlyeco.co.kr/category/%EC%9A%95%EC%8B%A4%EC%9A%A9%ED%92%88/95/"; // 리빙-욕실용품 카테고리 페이지
     }
 
-    public void productWebCrawling(String category) {
+    public List<Product> productWebCrawling(String category) {
+        List<Product> products = new ArrayList<>();
+
         String crawlingPageUrl = "";
         switch (category) {
             case "kitchen" -> crawlingPageUrl = kitchenPageUrl;
@@ -54,7 +55,7 @@ public class JayeonsangjumCrawling {
             case "bath" -> crawlingPageUrl = bathPageUrl;
             default -> crawlingPageUrl = null;
         }
-        if (crawlingPageUrl == null) return;
+        if (crawlingPageUrl == null) return products;
 
         this.driver.get(crawlingPageUrl);
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
@@ -73,10 +74,10 @@ public class JayeonsangjumCrawling {
                     descriptionElements = this.driver.findElements(By.className("description"));
                     prdImgElements = this.driver.findElements(By.className("prdImg"));
                 } catch (Exception e) {
-                    System.out.println(e);
+                    e.printStackTrace();
                 }
             }
-            if (descriptionElements.size() == 0) break; // 마지막 페이지까지 상품 검토 완료
+            if (descriptionElements.isEmpty()) break; // 마지막 페이지까지 상품 검토 완료
 
             for (int i = 0; i < descriptionElements.size(); i++) {
                 Product product = new Product();
@@ -105,13 +106,10 @@ public class JayeonsangjumCrawling {
                 break;
             }
         }
+        return products;
     }
 
     public String getBrandName() {
         return brandName;
-    }
-
-    public ArrayList<Product> getProducts() {
-        return products;
     }
 }

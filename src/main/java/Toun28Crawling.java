@@ -9,7 +9,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Toun28Crawling {
+public class Toun28Crawling implements Crawling  {
     private final WebDriver driver;
     private final JavascriptExecutor javascriptExecutor;
     private final Actions actions;
@@ -23,7 +23,6 @@ public class Toun28Crawling {
     private final ArrayList<String> cosmeticPageUrl = new ArrayList<>(); // 화장품 카테고리 페이지 저장
 
     private final String brandName = "톤28";
-    private final ArrayList<Product> products = new ArrayList<>();
 
     public Toun28Crawling() {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
@@ -44,9 +43,11 @@ public class Toun28Crawling {
         kitchenPageUrl.add("https://www.toun28.com/renew/product?category=14&sort="); // 주방씻을거리
     }
 
-    public void productWebCrawling(String category) {
-        ArrayList<String> crawlingPageUrls = new ArrayList<>();
+    public List<Product> productWebCrawling(String category) {
 
+        List<Product> products = new ArrayList<>();
+
+        ArrayList<String> crawlingPageUrls = new ArrayList<>();
         switch (category) {
             case "bath" -> {
                 crawlingPageUrls.add(bathPageUrl.get(0));
@@ -58,7 +59,9 @@ public class Toun28Crawling {
                 crawlingPageUrls.add(cosmeticPageUrl.get(1));
             }
             case "kitchen" -> crawlingPageUrls.add(kitchenPageUrl.get(0));
+            default -> crawlingPageUrls = null;
         }
+        if(crawlingPageUrls == null) return products;
 
         for (String crawlingPageUrl : crawlingPageUrls) {
             this.driver.get(crawlingPageUrl);
@@ -94,13 +97,10 @@ public class Toun28Crawling {
                 products.add(product);
             }
         }
+        return products;
     }
 
     public String getBrandName() {
         return brandName;
-    }
-
-    public ArrayList<Product> getProducts() {
-        return products;
     }
 }
