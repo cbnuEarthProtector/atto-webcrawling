@@ -34,9 +34,39 @@ public class ProductDao extends Dao {
         }
     }
 
+    // 기존에 존재하는 상품 정보 update
+    public void update(Integer productId, Product product) {
+        String SQL = "UPDATE product " +
+                "SET name = ?, category = ?, price = ?, photo_url = ? " +
+                "WHERE id = ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(SQL);
+
+            pstmt.setString(1, product.getName()); // id가 auto_increment filed 라서 column 명을 생략하고 insert 문을 사용하는 경우, null 값을 넣어주면 된다,
+            pstmt.setString(2, product.getCategory());
+            pstmt.setInt(3, product.getPrice());
+            pstmt.setString(4, product.getPhotoURL());
+            pstmt.setInt(5, productId);
+
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(conn, pstmt);
+        }
+    }
+
     public void insert(Integer brandId, Product product) {
         // 동일한 상품이 존재하는 경우
-        if(findBySiteURL(product.getSiteURL())) return;
+        Integer productId = findBySiteURL(product.getSiteURL());
+        if (productId != null) update(productId, product);
 
         String SQL = "INSERT or ignore INTO product VALUES (?,?,?,?,?,?,?,?,?)";
 
@@ -66,7 +96,7 @@ public class ProductDao extends Dao {
         }
     }
 
-    public Boolean findBySiteURL(String siteURL) {
+    public Integer findBySiteURL(String siteURL) {
         String SQL = "SELECT *\n" +
                 "FROM product\n" +
                 "WHERE site_url = ?";
@@ -82,7 +112,9 @@ public class ProductDao extends Dao {
 
             rs = pstmt.executeQuery();
 
-            return rs.next();
+            if(rs.next()) {
+                return rs.getInt(1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
