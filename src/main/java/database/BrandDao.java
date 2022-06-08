@@ -29,6 +29,9 @@ public class BrandDao extends Dao {
     }
 
     public void insert(Brand brand) {
+        // 동일한 브랜드명 중복 저장 방지
+        if(findByName(brand.getName()) != null) return;
+
         String SQL = "INSERT INTO brand VALUES (?,?,?,?)";
 
         Connection conn = null;
@@ -50,6 +53,33 @@ public class BrandDao extends Dao {
         } finally {
             close(conn, pstmt);
         }
+    }
+
+    public Integer findByName(String brandName) {
+        String SQL = "SELECT id\n" +
+                "FROM brand\n" +
+                "WHERE name = ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(SQL);
+            pstmt.setString(1, brandName);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(conn, pstmt, rs);
+        }
+        return null;
     }
 
     public void drop() {

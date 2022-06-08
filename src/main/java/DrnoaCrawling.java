@@ -1,5 +1,4 @@
 import database.Product;
-
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -10,7 +9,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DrnoaCrawling {
+public class DrnoaCrawling implements Crawling  {
     private final WebDriver driver;
     private final JavascriptExecutor javascriptExecutor;
     private final Actions actions;
@@ -25,7 +24,6 @@ public class DrnoaCrawling {
     private final ArrayList<String> fashionPageUrl = new ArrayList<>(); // 패션 관련 카테고리 페이지 저장
 
     private final String brandName = "닥터노아";
-    private final ArrayList<Product> products = new ArrayList<>();
 
     public DrnoaCrawling() {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
@@ -43,10 +41,19 @@ public class DrnoaCrawling {
         bathPageUrl.add("https://www.doctornoah.net/oralcareproduct"); // 구강 관리 카테고리 페이지
     }
 
-    public void productWebCrawling_OnlyBath() {
+    @Override
+    public List<Product> productWebCrawling(String category) {
+        List<Product> products = new ArrayList<>();
+
         ArrayList<String> crawlingPageUrls = new ArrayList<>();
-        crawlingPageUrls.add(bathPageUrl.get(0));
-        crawlingPageUrls.add(bathPageUrl.get(1));
+        switch (category) {
+            case "bath" -> {
+                crawlingPageUrls.add(bathPageUrl.get(0));
+                crawlingPageUrls.add(bathPageUrl.get(1));
+            }
+            default -> crawlingPageUrls = null;
+        }
+        if(crawlingPageUrls == null) return products;
 
         for (String crawlingPageUrl : crawlingPageUrls) {
             this.driver.get(crawlingPageUrl);
@@ -63,7 +70,7 @@ public class DrnoaCrawling {
 
             for (WebElement element : shopItemElements) {
                 Product product = new Product();
-                product.setCategory("bath");
+                product.setCategory(category);
 
                 String price = element.findElement(By.className("item-pay-detail"))
                         .findElement(By.className("pay")).getText();
@@ -80,13 +87,10 @@ public class DrnoaCrawling {
                 products.add(product);
             }
         }
+        return products;
     }
 
     public String getBrandName() {
         return brandName;
-    }
-
-    public ArrayList<Product> getProducts() {
-        return products;
     }
 }
