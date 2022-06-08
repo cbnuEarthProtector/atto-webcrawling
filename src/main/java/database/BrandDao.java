@@ -10,8 +10,7 @@ public class BrandDao extends Dao {
         String SQL = "CREATE TABLE IF NOT EXISTS Brand (\n"
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
                 + "name TEXT,\n"
-                + "photo_url TEXT, \n"
-                + "is_bookmarked INTEGER \n"
+                + "photo_url TEXT \n"
                 + ");";
 
         Connection conn = null;
@@ -32,7 +31,7 @@ public class BrandDao extends Dao {
         // 동일한 브랜드명 중복 저장 방지
         if(findByName(brand.getName()) != null) return;
 
-        String SQL = "INSERT INTO brand VALUES (?,?,?,?)";
+        String SQL = "INSERT INTO brand VALUES (?,?,?)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -45,7 +44,6 @@ public class BrandDao extends Dao {
             pstmt.setObject(1, brand.getId()); // id가 auto_increment filed 라서 column 명을 생략하고 insert 문을 사용하는 경우, null 값을 넣어주면 된다,
             pstmt.setString(2, brand.getName());
             pstmt.setString(3, brand.getPhotoURL());
-            pstmt.setInt(4, 0);
 
             pstmt.executeUpdate();
         } catch (Exception e) {

@@ -11,5 +11,4 @@ public class Brand {
     private Integer id;
     private String name;
     private String photoURL;
-    private Boolean isBookmarked;
 }

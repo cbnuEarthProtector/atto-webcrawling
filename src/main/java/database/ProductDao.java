@@ -15,8 +15,6 @@ public class ProductDao extends Dao {
                 + "price INTEGER, \n"
                 + "site_url TEXT unique, \n"
                 + "photo_url TEXT, \n"
-                + "is_bookmarked INTEGER , \n"
-                + "memo TEXT, \n"
                 + "foreign key(brand_id) references Brand(id)\n"
                 + ");";
 
@@ -68,7 +66,7 @@ public class ProductDao extends Dao {
         Integer productId = findBySiteURL(product.getSiteURL());
         if (productId != null) update(productId, product);
 
-        String SQL = "INSERT or ignore INTO product VALUES (?,?,?,?,?,?,?,?,?)";
+        String SQL = "INSERT or ignore INTO product VALUES (?,?,?,?,?,?,?)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -85,8 +83,6 @@ public class ProductDao extends Dao {
             pstmt.setInt(5, product.getPrice());
             pstmt.setString(6, product.getSiteURL());
             pstmt.setString(7, product.getPhotoURL());
-            pstmt.setInt(8, 0);
-            pstmt.setString(9, null);
 
             pstmt.executeUpdate();
         } catch (Exception e) {
