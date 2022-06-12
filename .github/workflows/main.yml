@@ -4,8 +4,10 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  schedule:
-    - cron: '0 0 1 * *' # monthly
+
+# .yml file must be committed to the default or base branch to use schedule
+#   schedule:
+#     - cron: '0 0 1 * *' # monthly
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
