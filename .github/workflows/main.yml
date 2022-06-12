@@ -2,14 +2,7 @@
 
 name: CI
 
-# Controls when the workflow will run
 on:
-
-# .yml file must be committed to the default or base branch to use schedule
-#   schedule:
-#     - cron: '0 0 1 * *' # monthly
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
