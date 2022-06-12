@@ -35,6 +35,9 @@ jobs:
       - name: Check Gradle Tasks list
         run: ./gradlew tasks
 
+      - name: mv chromedriver
+        run: sudo mv /usr/local/bin/chromedriver ./chromedriver
+
       - name: Execute Gradle run
         run: ./gradlew run
 
