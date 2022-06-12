@@ -1,14 +1,11 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 on:
-  push:
-    branches:
-      - deploy
+  schedule:
+    - cron: 0 0 * * * # daily
+
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -60,8 +57,8 @@ jobs:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         with:
           source-directory: 'database'
-          destination-github-username: 'chisan01'
+          destination-github-username: 'cbnuEarthProtector'
           destination-repository-name: 'atto'
-          user-email: chisan2001@naver.com
+          user-email: chisan2001@gmail.com
           target-branch: db-update
           target-directory: 'app/src/main/assets/database'
