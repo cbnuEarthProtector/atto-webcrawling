@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  name: make app.db & push:
+  push:
+    name: make app.db & push
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
